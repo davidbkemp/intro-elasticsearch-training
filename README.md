@@ -22,7 +22,7 @@ To stop elasticsearch, press `Ctrl-C` in the terminal window running docker.
 
 If you choose not to follow the recommended installation.
 
-  1. Find version [7.13.2](https://www.elastic.co/downloads/past-releases) for Elasticsearch and Kibana
+  1. Find version [7.14.2](https://www.elastic.co/downloads/past-releases) for Elasticsearch and Kibana
   2. Follow the installation instructions
     - [Elasticserch](https://www.elastic.co/downloads/elasticsearch)
     - [Kibana](https://www.elastic.co/downloads/kibana)
