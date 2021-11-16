@@ -1,0 +1,280 @@
+# Intro
+
+GET _cat/indices
+
+
+
+# Getting started
+
+PUT movies/_doc/1
+{
+  "id": "1",
+  "title": "Spider-Man: Homecoming",
+  "genres": [ "comedy", "action" ]
+}
+
+GET movies/_search
+{
+  "query": {
+    "match": {
+      "title": "spider man"
+    }
+  }
+}
+
+DELETE movies/_doc/1
+
+DELETE movies
+
+
+
+# Mappings
+
+PUT movies
+{
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "title": {
+        "type": "text",
+        "analyzer": "english"
+      },
+      "genres": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+
+GET movies/_mapping
+
+
+
+# Term queries
+
+GET movies/_search
+
+GET movies/_search
+{
+  "query": {
+    "terms": {
+      "overview": ["batman"]
+    }
+  }
+}
+
+
+
+# Range queries
+
+GET movies/_search
+{
+  "query": {
+    "range": {
+      "release_date": {
+        "gte": "2016-01-01",
+        "lte": "2016-12-01"
+      }
+    }
+  }
+}
+
+
+
+# Analyzers
+
+GET _analyze
+{
+  "analyzer": "standard",
+  "text": "Bob's Burgers!!"
+}
+
+DELETE analyzer-test
+
+PUT analyzer-test
+{
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "standard"
+      }
+    }
+  }
+}
+
+PUT analyzer-test/_doc/1
+{
+  "title": "Bob's Burgers!!"
+}
+
+GET analyzer-test/_search
+{
+  "query": {
+    "match": {
+      "title": {
+        "query": "bobs burgers"
+      }
+    }
+  }
+}
+
+
+
+# Match
+
+GET movies/_search
+{
+  "query": {
+    "match": {
+      "overview": {
+        "query": "war"
+      }
+    }
+  }
+}
+
+
+
+# Phrase match
+
+GET articles/_search
+{
+  "query": {
+    "match_phrase": {
+      "title": "back to school"
+    }
+  }
+}
+
+# To answer question 2
+PUT match-phrase-test
+{
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "english"
+      }
+    }
+  }
+}
+
+# Index a document which get turned into "The car is the money" => ["car", "money"]
+PUT match-phrase-test/_doc/1
+{
+  "title": "The car is the money"
+}
+
+# Query using `match_phrase`. "The car the is money" => ["car", "money"] which matches the indexed document
+GET match-phrase-test/_search
+{
+  "query": {
+    "match_phrase": {
+      "title": "The car is the money"
+    }
+  }
+}
+
+# This doesn't work even though the tokens contains both "car" and "money" because it's not in the right order (["money", "car"] doesn't match ["car", "money"])
+GET match-phrase-test/_search
+{
+  "query": {
+    "match_phrase": {
+      "title": "The money is the car"
+    }
+  }
+}
+
+
+
+# Bool queries
+
+GET movies/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "term": {
+          "genres": "comedy"
+        }
+      },
+      "must_not": {
+        "term": {
+          "genres": "action"
+        }
+      }
+    }
+  }
+}
+
+GET movies/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "term": {
+          "genres": "comedy"
+        }
+      },
+      "must_not": {
+        "term": {
+          "genres": "action"
+        }
+      },
+      "must": {
+        "match": {
+          "overview": "life"
+        }
+      }
+    }
+  }
+}
+
+GET movies/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "term": {
+          "genres": "comedy"
+        }
+      },
+      "should": {
+        "match": {
+          "overview": "christmas"
+        }
+      }
+    }
+  }
+}
+
+
+
+# Bonuses
+
+GET movies/_search
+{
+  "query": {
+    "exists": {
+      "field": "genres"
+    }
+  }
+}
+
+GET movies/_search
+{
+  "query": {
+    "bool": {
+      "must_not": [
+        {
+          "exists": {
+            "field": "genres"
+          }
+        }
+      ]
+    }
+  }
+}

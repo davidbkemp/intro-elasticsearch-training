@@ -91,6 +91,12 @@ class: center, middle, inverse
 
 class: center, middle, inverse
 
+# Elasticsearch or Opensearch?
+
+---
+
+class: center, middle, inverse
+
 # Let's get to it!
 
 ---
@@ -196,9 +202,11 @@ PUT movies
 }
 ```
 
-Now run `./auto/index-movies.sh` and see the dynamic mapping
+Now run `./auto/index-movies.sh` and see the dynamic mapping, this will remove the above mappings
 
 ---
+
+# Automated mappings
 
 `GET movies/_mapping`
 
@@ -256,6 +264,13 @@ Now run `./auto/index-movies.sh` and see the dynamic mapping
 }
 ```
 ]
+
+---
+
+# Real examples
+
+- [Comparables search api](https://git.realestate.com.au/property-insights/property-lifecycle-feeder/blob/master/src/main/resources/mappings.json)
+- [Listing search index feeder](https://git.realestate.com.au/consumer-experience/listings-search-index-feeder/blob/master/searchmodel/src/main/resources/com/reagroup/listingssearch/feeder/searchmodel/mappings.json)
 
 ---
 
@@ -331,6 +346,8 @@ GET articles/_search
     }
   ```
 
+  Note that you can use multiple operators in a single range query.
+
 .footnote[[Range query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html)]
 
 ---
@@ -349,6 +366,8 @@ GET articles/_search
 - Supports custom analysers
 
 You can use the `/_analyze` endpoint to test analyzers
+
+For example, [location suggest's mappings and settings](https://git.realestate.com.au/consumer-experience/locations-suggest-mapping/tree/c21706a4e6b86e3481037f78ecc8baf39a842da7/src/main/resources/com/reagroup/locationssuggest/addresses)
 
 .footnote[[Analyzers](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html)]
 
@@ -647,6 +666,16 @@ GET /scoring-test/_search
 - Does not support fuzzyness
 - By default uses the analyzer specified in the mappings
 
+```
+GET articles/_search
+{
+  "query": {
+    "match_phrase": {
+      "title": "back to school"
+    }
+  }
+}
+```
 
 .footnote[[Phrase-match query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query-phrase.html)]
 ---
@@ -729,6 +758,40 @@ GET movies/_search
 HINT: Look at ` must`
 
 ### 3. Find ALL the 'comedy' movies and boost those that are about 'christmas'
+
+---
+
+# Bonus
+
+Exists
+```
+GET movies/_search
+{
+  "query": {
+    "exists": {
+      "field": "genres"
+    }
+  }
+}
+```
+
+Not exists (is null)
+```
+GET movies/_search
+{
+  "query": {
+    "bool": {
+      "must_not": [
+        {
+          "exists": {
+            "field": "genres"
+          }
+        }
+      ]
+    }
+  }
+}
+```
 
 ---
 class: center, middle
